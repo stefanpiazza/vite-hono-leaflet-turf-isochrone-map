@@ -162,7 +162,7 @@ function Index() {
           }
         }}
       >
-        <DialogContent>
+        <DialogContent className="sm:max-w-md">
           <DialogHeader>
             {formState === "create" && <DialogTitle>Create Marker</DialogTitle>}
             {formState === "edit" && <DialogTitle>Edit Marker</DialogTitle>}
@@ -173,6 +173,7 @@ function Index() {
               e.preventDefault();
               form.handleSubmit();
             }}
+            className="space-y-6"
           >
             <form.Field
               name="transport"
@@ -181,8 +182,8 @@ function Index() {
                   !value ? "Transport type is required" : undefined,
               }}
               children={(field) => (
-                <>
-                  <Label>Transport Type</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="transport">Transport Type</Label>
                   <Select
                     value={field.state.value}
                     onValueChange={field.handleChange}
@@ -190,7 +191,7 @@ function Index() {
                       if (!open) field.handleBlur();
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="transport" className="w-full">
                       <SelectValue placeholder="Select a transport type..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -204,7 +205,7 @@ function Index() {
                       {field.state.meta.errors[0]}
                     </p>
                   )}
-                </>
+                </div>
               )}
             />
 
@@ -215,8 +216,8 @@ function Index() {
                   !value ? "Range is required" : undefined,
               }}
               children={(field) => (
-                <>
-                  <Label>Range (meters)</Label>
+                <div className="space-y-2">
+                  <Label htmlFor="range">Range (meters)</Label>
                   <Select
                     value={
                       field.state.value && field.state.value > 0
@@ -230,7 +231,7 @@ function Index() {
                       if (!open) field.handleBlur();
                     }}
                   >
-                    <SelectTrigger>
+                    <SelectTrigger id="range" className="w-full">
                       <SelectValue placeholder="Select a range..." />
                     </SelectTrigger>
                     <SelectContent>
@@ -246,26 +247,29 @@ function Index() {
                       {field.state.meta.errors[0]}
                     </p>
                   )}
-                </>
+                </div>
               )}
             />
 
-            <>
+            <div className="space-y-2">
               <Label>Location</Label>
-              <p className="text-muted-foreground text-sm">
-                {form.state.values.location[0].toFixed(4)},{" "}
-                {form.state.values.location[1].toFixed(4)}
-              </p>
-            </>
+              <div className="border-input bg-muted rounded-md border px-3 py-2">
+                <p className="font-mono text-sm">
+                  {form.state.values.location[0].toFixed(4)},{" "}
+                  {form.state.values.location[1].toFixed(4)}
+                </p>
+              </div>
+            </div>
 
-            <DialogFooter>
+            <DialogFooter className="gap-2">
               {formState === "create" && <Button type="submit">Create</Button>}
               {formState === "edit" && (
                 <>
                   <Button
-                    variant="destructive"
+                    variant="outline"
                     type="button"
                     onClick={() => handleDeleteMarker(form.state.values.id)}
+                    className="border-destructive text-destructive hover:bg-destructive hover:text-white"
                   >
                     Delete
                   </Button>
