@@ -53,9 +53,10 @@ cd client
 bun run build
 ```
 
-Preview the production build:
+Run the production build (from the root directory):
 
 ```bash
-cd client
-bun run preview
+bun run start
 ```
+
+This will serve the compiled client from the Hono server.
