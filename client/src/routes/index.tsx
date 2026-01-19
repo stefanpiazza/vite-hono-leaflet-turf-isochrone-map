@@ -15,7 +15,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useConfig } from "@/hooks/use-config";
+import {
+  type ConfigItem,
+  locationSchema,
+  transportSchema,
+  useConfig,
+} from "@/hooks/use-config";
 import { useMap } from "@/hooks/use-map";
 import { useForm } from "@tanstack/react-form";
 import { createFileRoute } from "@tanstack/react-router";
@@ -29,21 +34,6 @@ type FormState = "create" | "edit";
 const searchSchema = z.object({
   config: z.string().optional(),
 });
-
-const locationSchema = z.tuple([z.number(), z.number()]);
-
-const transportSchema = z.enum([
-  "driving-car",
-  "cycling-regular",
-  "foot-walking",
-]);
-
-type ConfigItem = {
-  id: string;
-  location: z.infer<typeof locationSchema>;
-  transport: z.infer<typeof transportSchema>;
-  range: number;
-};
 
 const formValuesSchema = z.object({
   id: z.string(),

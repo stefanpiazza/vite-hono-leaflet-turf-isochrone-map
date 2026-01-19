@@ -1,23 +1,24 @@
 import { useMemo } from "react";
 import { z } from "zod";
 
-const transportSchema = z.enum([
+export const locationSchema = z.tuple([z.number(), z.number()]);
+
+export const transportSchema = z.enum([
   "driving-car",
   "cycling-regular",
   "foot-walking",
 ]);
 
-const configItemSchema = z.object({
+export const configItemSchema = z.object({
   id: z.string(),
-  location: z.tuple([z.number(), z.number()]),
+  location: locationSchema,
   transport: transportSchema,
   range: z.number(),
 });
 
-const configSchema = z.array(configItemSchema);
+export const configSchema = z.array(configItemSchema);
 
 export type ConfigItem = z.infer<typeof configItemSchema>;
-export { configItemSchema, transportSchema };
 
 export function useConfig(encodedConfig?: string): ConfigItem[] {
   return useMemo(() => {
