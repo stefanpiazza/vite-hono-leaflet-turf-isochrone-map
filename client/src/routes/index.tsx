@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
@@ -111,6 +112,14 @@ function Index() {
     setFormState("create");
   }
 
+  function handleIsochroneClick(e: LeafletEvent) {
+    console.log(e);
+  }
+
+  function handleIntersectionClick(e: LeafletEvent) {
+    console.log(e);
+  }
+
   function handleMarkerClick(id: string) {
     const marker = config.find((item) => item.id === id);
 
@@ -147,6 +156,8 @@ function Index() {
   const mapProps = useMap(config, {
     map: { click: handleMapClick },
     marker: { click: handleMarkerClick, dragend: handleMarkerDragEnd },
+    isochrone: { click: handleIsochroneClick },
+    intersection: { click: handleIntersectionClick },
   });
 
   return (
@@ -164,8 +175,22 @@ function Index() {
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            {formState === "create" && <DialogTitle>Create Marker</DialogTitle>}
-            {formState === "edit" && <DialogTitle>Edit Marker</DialogTitle>}
+            {formState === "create" && (
+              <>
+                <DialogTitle>Create Marker</DialogTitle>
+                <DialogDescription>
+                  Add a new location marker to the map.
+                </DialogDescription>
+              </>
+            )}
+            {formState === "edit" && (
+              <>
+                <DialogTitle>Edit Marker</DialogTitle>
+                <DialogDescription>
+                  Modify or remove this location marker.
+                </DialogDescription>
+              </>
+            )}
           </DialogHeader>
 
           <form
