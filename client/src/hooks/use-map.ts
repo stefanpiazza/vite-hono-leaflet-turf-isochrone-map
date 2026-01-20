@@ -18,6 +18,14 @@ export interface MarkerHandlers {
   dragend?: (id: string, e: LeafletEvent) => void;
 }
 
+export interface IsochroneHandlers {
+  click?: (e: LeafletEvent) => void;
+}
+
+export interface IntersectionHandlers {
+  click?: (e: LeafletEvent) => void;
+}
+
 export interface MapMarker {
   key: string;
   id: string;
@@ -45,6 +53,7 @@ export interface MapGeoJson {
   key: string;
   data: GeoJsonObject;
   style?: L.PathOptions;
+  eventHandlers?: Partial<Record<"click", (e: LeafletEvent) => void>>;
 }
 
 export interface MapProps {
@@ -149,6 +158,24 @@ function useGeoJson(config: ConfigItem[]): MapGeoJson[] {
   return geojson;
 }
 
+function useGeoJsonWithHandlers(
+  geojson: MapGeoJson[],
+  handlers?: IsochroneHandlers,
+): MapGeoJson[] {
+  return useMemo(() => {
+    if (!handlers) return geojson;
+
+    return geojson.map((geo) => ({
+      ...geo,
+      eventHandlers: {
+        click: (e: LeafletEvent) => {
+          handlers.click?.(e);
+        },
+      },
+    }));
+  }, [geojson, handlers]);
+}
+
 function usePolylines(
   polyline: { from: [number, number]; to: [number, number] } | null,
 ): MapPolyline[] {
@@ -215,11 +242,31 @@ function useIntersections(config: ConfigItem[]): MapGeoJson[] {
   return intersections;
 }
 
+function useIntersectionsWithHandlers(
+  intersections: MapGeoJson[],
+  handlers?: IntersectionHandlers,
+): MapGeoJson[] {
+  return useMemo(() => {
+    if (!handlers) return intersections;
+
+    return intersections.map((intersection) => ({
+      ...intersection,
+      eventHandlers: {
+        click: (e: LeafletEvent) => {
+          handlers.click?.(e);
+        },
+      },
+    }));
+  }, [intersections, handlers]);
+}
+
 export function useMap(
   config: ConfigItem[] = [],
   handlers?: {
     marker?: MarkerHandlers;
     map?: MapHandlers;
+    isochrone?: IsochroneHandlers;
+    intersection?: IntersectionHandlers;
   },
 ): MapProps {
   const [polyline, setPolyline] = useState<{
@@ -250,10 +297,36 @@ export function useMap(
     [handlers?.marker],
   );
 
+  const isochroneHandlers: IsochroneHandlers = useMemo(
+    () => ({
+      click: (e: LeafletEvent) => {
+        handlers?.isochrone?.click?.(e);
+      },
+    }),
+    [handlers?.isochrone],
+  );
+
+  const intersectionHandlers: IntersectionHandlers = useMemo(
+    () => ({
+      click: (e: LeafletEvent) => {
+        handlers?.intersection?.click?.(e);
+      },
+    }),
+    [handlers?.intersection],
+  );
+
   const markers = useMarkers(config);
   const markersWithHandlers = useMarkersWithHandlers(markers, markerHandlers);
   const geojson = useGeoJson(config);
+  const geojsonWithHandlers = useGeoJsonWithHandlers(
+    geojson,
+    isochroneHandlers,
+  );
   const intersections = useIntersections(config);
+  const intersectionsWithHandlers = useIntersectionsWithHandlers(
+    intersections,
+    intersectionHandlers,
+  );
   const polylines = usePolylines(polyline);
 
   const mapHandlers: MapHandlers = handlers?.map?.click
@@ -264,7 +337,7 @@ export function useMap(
     handlers: mapHandlers,
     markers: markersWithHandlers,
     polylines,
-    geojson: [...geojson, ...intersections],
+    geojson: [...geojsonWithHandlers, ...intersectionsWithHandlers],
     center: MAP_DEFAULT_CENTER,
     zoom: MAP_DEFAULT_ZOOM,
   };

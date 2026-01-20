@@ -52,7 +52,12 @@ function Map({
         />
       ))}
       {geojson?.map((geo) => (
-        <GeoJSON key={geo.key} data={geo.data} style={geo.style} />
+        <GeoJSON
+          key={geo.key}
+          data={geo.data}
+          style={geo.style}
+          eventHandlers={geo.eventHandlers}
+        />
       ))}
     </MapContainer>
   );
