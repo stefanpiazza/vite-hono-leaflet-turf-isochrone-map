@@ -46,11 +46,7 @@ const formValuesSchema = z.object({
 const generateId = () => Math.random().toString(36).slice(2, 11);
 
 const getRangeOptions = () => {
-  const options = [];
-  for (let i = 100; i <= 1000; i += 100) {
-    options.push(i);
-  }
-  return options;
+  return [5, 10, 15, 30, 60, 90, 120];
 };
 
 export const Route = createFileRoute("/")({
@@ -83,7 +79,7 @@ function Index() {
         id,
         location,
         transport,
-        range,
+        range: range * 60,
       };
 
       const existingItem = config.find((item) => item.id === parsedValue.id);
@@ -127,7 +123,7 @@ function Index() {
       form.setFieldValue("id", marker.id);
       form.setFieldValue("location", marker.location);
       form.setFieldValue("transport", marker.transport);
-      form.setFieldValue("range", marker.range);
+      form.setFieldValue("range", marker.range / 60);
 
       setIsDialogOpen(true);
       setFormState("edit");
@@ -242,7 +238,7 @@ function Index() {
               }}
               children={(field) => (
                 <div className="space-y-2">
-                  <Label htmlFor="range">Range (meters)</Label>
+                  <Label htmlFor="range">Range (minutes)</Label>
                   <Select
                     value={
                       field.state.value && field.state.value > 0
@@ -262,7 +258,7 @@ function Index() {
                     <SelectContent>
                       {getRangeOptions().map((r) => (
                         <SelectItem key={r} value={r.toString()}>
-                          {r}m
+                          {r} min
                         </SelectItem>
                       ))}
                     </SelectContent>
